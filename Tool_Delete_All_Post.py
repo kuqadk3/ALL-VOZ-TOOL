@@ -2,11 +2,14 @@ import urllib, urllib2, cookielib, hashlib
 from BeautifulSoup import BeautifulSoup
 import re
 import time
+
+#modify these link
 username = 'username'
 password = "password"
-md5 = hashlib.md5(password).hexdigest()
-#search id link
 search_post_link = "https://vozforums.com/search.php?searchid=0b14297a5dd61664f5a9f17c9d6d9149" # các thím click vào user của các thím -> all post -> lấy link
+#end of modify
+
+md5 = hashlib.md5(password).hexdigest()
 post_link = []
 
 def find_security_token(resp):
