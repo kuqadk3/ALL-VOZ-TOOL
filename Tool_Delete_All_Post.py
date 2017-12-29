@@ -23,6 +23,8 @@ def find_post(resp):
  soup = BeautifulSoup(resp.read())
  for link in soup.findAll('a', attrs={'href': re.compile("#post")}):
   post_link.append(link.get('href'))
+
+
 post_link = post_link[2:]
 cj = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
