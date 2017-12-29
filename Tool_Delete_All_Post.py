@@ -39,7 +39,7 @@ def delete_post(opener, post_list):
    "deletepost" : "delete",
    "do" : "deletepost",
    "p" : p,
-   "reason" : "Tool Delete All Post",
+   "reason" : "Tool Delete All Post at https://github.com/kuqadk3/ALL-VOZ-TOOL/blob/master/Tool_Delete_All_Post.py",
    "s" : "",
    "securitytoken" : securitytoken,
    "url" : ("https://vozforums.com/showthread.php?p=" + p)
