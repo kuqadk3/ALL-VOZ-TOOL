@@ -25,7 +25,6 @@ def find_post(resp):
   post_link.append(link.get('href'))
 
 
-post_link = post_link[2:]
 cj = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 login_data = "do=login&s=&securitytoken=guest&vb_login_md5password=" + md5 + "&vb_login_md5password_utf=" + md5 + "&vb_login_password=&vb_login_username=" + username
