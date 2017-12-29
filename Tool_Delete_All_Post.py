@@ -2,14 +2,12 @@ import urllib, urllib2, cookielib, hashlib
 from BeautifulSoup import BeautifulSoup
 import re
 import time
+import requests
 post_link = []
 
 #modify
-username = 'username'
-password = "password	"
-search_post_link = "https://vozforums.com/search.php?searchid=bab85b4e65b55ed19048bdcf1c4814ae" 
-
-
+username = "username"
+password = "password"
 
 
 #Other function
@@ -24,6 +22,12 @@ def find_post(resp):
  soup = BeautifulSoup(resp.read())
  for link in soup.findAll('a', attrs={'href': re.compile("#post")}):
   post_link.append(link.get('href'))
+
+def get_user_id(opener):
+ resp = opener.open('https://vozforums.com/')
+ soup = BeautifulSoup(resp.read())
+ for link in soup.findAll('a', attrs={'href': re.compile("member.php")}):
+  return link.get('href')[13:]
 
 def delete_post(opener, post_list):
  for link in post_link :
@@ -70,7 +74,7 @@ login_data = {
  "vb_login_username" : username
 }
 opener.open('https://vozforums.com/login.php', urllib.urlencode(login_data))
-
+search_post_link = opener.open('https://vozforums.com/search.php?do=finduser&u=' + get_user_id(opener)).geturl()
 #Get all post link
 for i in range(0, 20):
  resp = opener.open(search_post_link + "&pp=20&page=" + str(i))
