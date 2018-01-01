@@ -7,6 +7,7 @@ Hướng dẫn sử dụng :
 3. Mở file delete.py và thay đổi 2 dòng sau bằng username + password của bạn
 
 username = "username"
+
 password = "password"
 
 4. Chạy bằng cmd lệnh :
