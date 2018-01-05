@@ -3,7 +3,6 @@ from BeautifulSoup import BeautifulSoup
 import re
 import time
 import requests
-post_link = []
 
 #modify
 username = "username"
@@ -18,10 +17,11 @@ def find_security_token(resp):
  return security_token
 
 def find_post(resp):
- global post_link
+ post_link = []
  soup = BeautifulSoup(resp.read())
  for link in soup.findAll('a', attrs={'href': re.compile("#post")}):
   post_link.append(link.get('href'))
+ return post_link
 
 def get_user_id(opener):
  resp = opener.open('https://vozforums.com/')
@@ -29,7 +29,17 @@ def get_user_id(opener):
  for link in soup.findAll('a', attrs={'href': re.compile("member.php")}):
   return link.get('href')[13:]
 
-def delete_post(opener, post_list):
+def delete_post(opener):
+ search_post_link = opener.open('https://vozforums.com/search.php?do=finduser&u=' + get_user_id(opener)).geturl() #get redirected all post link
+ post_link = []
+ #Get all post link
+ for i in range(0, 20):
+  resp = opener.open(search_post_link + "&pp=20&page=" + str(i))
+  post_link.extend(find_post(resp))
+
+ #remove duplicate in post_link
+ post_link = list(set(post_link))
+
  for link in post_link :
   #get p param
   s = link.find("p=")
@@ -48,39 +58,49 @@ def delete_post(opener, post_list):
    "securitytoken" : securitytoken,
    "url" : ("https://vozforums.com/showthread.php?p=" + p)
    }
- 
+  edit_thread_data = {
+   "do" : "updatepost",
+   "emailupdate" : "9999",
+   "message" : "Tool Delete All Post at [url]https://github.com/kuqadk3/ALL-VOZ-TOOL/blob/master/Tool_Delete_All_Post.py[/url]",
+   "p" : p, #get only ID
+   "parseurl" : "1",
+   "reason" : "",
+   "s" : "",
+   "sbutton" : "Save Changes",
+   "securitytoken" : securitytoken,
+   "signature" : "1",
+   "title" : "Deleted",
+   "wysiwyg" : "0"
+ }
   try :
-   opener.open("https://vozforums.com/editpost.php", urllib.urlencode(delete_data))
+   opener.open("https://vozforums.com/editpost.php", urllib.urlencode(edit_thread_data)) #edit both thread and post
+   opener.open("https://vozforums.com/editpost.php", urllib.urlencode(delete_data)) #delete if it is not thread
   except :
    print "Cannot delete " + p
    time.sleep(1)
    pass #just 503, lol voz database is shit
   else :
-   print "Delete " + p
+   print "Delete post " + p
  
  print "Done"
 
+def login(username, password):
+ cj = cookielib.CookieJar()
+ opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+ #login parameter
+ login_data = {
+  "do" : "login",
+  "s" : "",
+  "securitytoken" : "guest",
+  "vb_login_password" : password,
+  "vb_login_username" : username
+ }
+ opener.open('https://vozforums.com/login.php', urllib.urlencode(login_data))
+ return opener
+
+
 
 #MAIN
-#cookie for login
-cj = cookielib.CookieJar()
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#login parameter
-login_data = {
- "do" : "login",
- "s" : "",
- "securitytoken" : "guest",
- "vb_login_password" : password,
- "vb_login_username" : username
-}
-opener.open('https://vozforums.com/login.php', urllib.urlencode(login_data))
-search_post_link = opener.open('https://vozforums.com/search.php?do=finduser&u=' + get_user_id(opener)).geturl()
-#Get all post link
-for i in range(0, 20):
- resp = opener.open(search_post_link + "&pp=20&page=" + str(i))
- find_post(resp)
+opener = login(username, password) #cookie for login
+delete_post(opener)
 
-#remove duplicate link before delete each of them
-post_link = list(set(post_link))
-
-delete_post(opener, post_link)
